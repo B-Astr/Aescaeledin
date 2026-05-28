@@ -1,0 +1,212 @@
+/* frontend/src/pages/CreateJobPage.css */
+.create-job-main {
+  width: 100%;
+  padding: 32px 0 56px;
+  display: flex;
+  justify-content: center;
+}
+
+.create-job-card {
+  width: 100%;
+  max-width: 860px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 28px;
+  padding: 28px;
+  backdrop-filter: blur(14px);
+}
+
+.create-job-header {
+  margin-bottom: 24px;
+}
+
+.create-job-badge {
+  display: inline-flex;
+  min-height: 32px;
+  padding: 0 14px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  color: #bfdbfe;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.create-job-header h1 {
+  margin: 0 0 10px;
+  color: #f8fafc;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.create-job-header p {
+  margin: 0;
+  color: #94a3b8;
+  line-height: 1.7;
+}
+
+.create-job-form {
+  display: grid;
+  gap: 18px;
+}
+
+.create-job-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.create-job-field input,
+.create-job-field select,
+.create-job-field textarea {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(51, 65, 85, 0.58);
+  color: #f8fafc;
+  border-radius: 14px;
+  padding: 14px 15px;
+  outline: none;
+  font-size: 14px;
+}
+
+.create-job-field textarea {
+  resize: vertical;
+}
+
+.create-job-message {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.create-job-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.job-location-validation {
+  margin-top: 10px;
+}
+
+.job-location-validation-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.job-location-validate-button {
+  min-height: 40px;
+}
+
+.job-location-valid-badge {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 12px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.28);
+  color: #bbf7d0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.job-location-validation-message {
+  margin: 10px 0 0;
+  color: #cbd5e1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.job-location-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.74);
+  backdrop-filter: blur(8px);
+}
+
+.job-location-modal {
+  width: min(720px, 100%);
+  border-radius: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: #0f172a;
+  padding: 22px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+}
+
+.job-location-modal-header {
+  margin-bottom: 16px;
+}
+
+.job-location-modal-header h2 {
+  margin: 0 0 8px;
+  color: #f8fafc;
+  font-size: 1.35rem;
+}
+
+.job-location-modal-header p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.job-location-map {
+  width: 100%;
+  min-height: 340px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.job-location-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+@media (max-width: 768px) {
+  .create-job-main {
+    padding: 20px 0 40px;
+  }
+
+  .create-job-card {
+    padding: 22px;
+  }
+
+  .create-job-actions {
+    justify-content: stretch;
+  }
+
+  .create-job-actions .primary-home-button {
+    width: 100%;
+  }
+
+  .job-location-modal {
+    padding: 18px;
+  }
+
+  .job-location-map {
+    min-height: 280px;
+  }
+
+  .job-location-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .job-location-modal-actions button {
+    width: 100%;
+  }
+}

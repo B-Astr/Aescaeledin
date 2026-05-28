@@ -1,0 +1,118 @@
+/* frontend/src/pages/CompanyJobsPage.css */
+.company-jobs-main {
+  width: 100%;
+  padding: 32px 0 56px;
+}
+
+.company-jobs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.company-jobs-badge {
+  display: inline-flex;
+  min-height: 32px;
+  padding: 0 14px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  color: #bfdbfe;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.company-jobs-header h1 {
+  margin: 0 0 10px;
+  color: #f8fafc;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+.company-jobs-header p {
+  margin: 0;
+  color: #94a3b8;
+  line-height: 1.7;
+}
+
+.company-jobs-list {
+  display: grid;
+  gap: 18px;
+}
+
+.company-job-card,
+.company-jobs-empty-card {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 24px;
+  padding: 24px;
+  backdrop-filter: blur(14px);
+}
+
+.company-job-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.company-job-card h2,
+.company-jobs-empty-card h2 {
+  margin: 0 0 10px;
+  color: #f8fafc;
+}
+
+.company-job-card p,
+.company-jobs-empty-card p {
+  margin: 0;
+  color: #94a3b8;
+  line-height: 1.7;
+}
+
+.company-job-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.company-job-tags span,
+.company-job-tags .location-map-link {
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.location-map-link {
+  cursor: pointer;
+}
+
+.location-map-link:hover {
+  border-color: rgba(96, 165, 250, 0.34);
+  color: #bfdbfe;
+}
+
+.company-job-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .company-jobs-main {
+    padding: 20px 0 40px;
+  }
+}
