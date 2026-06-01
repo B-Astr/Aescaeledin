@@ -73,13 +73,17 @@ function normalizeIntent(input?: string): "login" | "register" {
  */
 export async function googleLogin(req: Request, res: Response) {
   try {
-    const { idToken, role, intent } = req.body as {
+    const { idToken, credential, role, intent, mode } = req.body as {
       idToken?: string;
+      credential?: string;
       role?: "CLIENTE" | "EMPRESA" | "PRO";
       intent?: string;
+      mode?: string;
     };
 
-    if (!idToken) {
+    const googleIdToken = idToken || credential;
+
+    if (!googleIdToken) {
       return res.status(400).json({
         error: "idToken es requerido",
       });
@@ -95,7 +99,7 @@ export async function googleLogin(req: Request, res: Response) {
     const googleClient = getGoogleClient();
 
     const ticket = await googleClient.verifyIdToken({
-      idToken,
+      idToken: googleIdToken,
       audience: clientId,
     });
 
@@ -119,7 +123,7 @@ export async function googleLogin(req: Request, res: Response) {
     }
 
     const selectedRole = normalizeSignupRole(role);
-    const selectedIntent = normalizeIntent(intent);
+    const selectedIntent = normalizeIntent(intent || mode);
 
     let user =
       (await User.findOne({ where: { email } })) ??

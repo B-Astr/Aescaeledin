@@ -1,0 +1,18 @@
+{
+  email mkyn3ko@gmail.com
+}
+
+bitformatica.com, www.bitformatica.com {
+  handle /api/api/* {
+    uri strip_prefix /api
+    reverse_proxy backend:4000
+  }
+
+  handle /api/* {
+    reverse_proxy backend:4000
+  }
+
+  handle {
+    reverse_proxy frontend:80
+  }
+}
