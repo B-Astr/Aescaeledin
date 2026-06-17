@@ -31,6 +31,11 @@ type MeUser = {
   picture: string | null;
 };
 
+type ToastState = {
+  type: "success" | "error";
+  message: string;
+};
+
 export default function CompanyJobsPage() {
   const navigate = useNavigate();
   const { LL } = useI18nContext();
@@ -39,6 +44,19 @@ export default function CompanyJobsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState<MeUser | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
+
+  useEffect(() => {
+    if (!toast) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setToast(null);
+    }, 3500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [toast]);
 
   useEffect(() => {
     async function loadData() {
@@ -99,6 +117,8 @@ export default function CompanyJobsPage() {
     if (!token) return;
 
     try {
+      setToast(null);
+
       const res = await fetch(
         `${API_URL}/api/company/jobs/${jobId}/deactivate`,
         {
@@ -112,7 +132,7 @@ export default function CompanyJobsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data?.error || "No se pudo desactivar la publicación");
+        throw new Error(data?.error || LL.companyJobsPage.deactivateError());
       }
 
       setJobs((prev) =>
@@ -120,8 +140,18 @@ export default function CompanyJobsPage() {
           job.id === jobId ? { ...job, isActive: false } : job
         )
       );
+      setToast({
+        type: "success",
+        message: LL.companyJobsPage.postingDeactivated(),
+      });
     } catch (err) {
-      alert(String(err));
+      setToast({
+        type: "error",
+        message:
+          err instanceof Error
+            ? err.message
+            : LL.companyJobsPage.deactivateError(),
+      });
     }
   }
 
@@ -149,6 +179,12 @@ export default function CompanyJobsPage() {
               {LL.companyJobsPage.createPosting()}
             </Link>
           </div>
+
+          {toast && (
+            <div className={`page-toast ${toast.type}`} role="status">
+              {toast.message}
+            </div>
+          )}
 
           {loading ? (
             <div className="company-jobs-empty-card">

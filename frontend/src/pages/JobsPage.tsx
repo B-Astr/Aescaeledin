@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import LocationMapLink from "../components/LocationMapLink";
 import "./HomePage.css";
 import { useI18nContext } from "../i18n";
+import { usePageMeta } from "../lib/usePageMeta";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -22,7 +23,17 @@ type PublicJob = {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+  company?: {
+    id: number;
+    name: string | null;
+    picture: string | null;
+    headline: string | null;
+    location: string | null;
+    website: string | null;
+  } | null;
 };
+
+const EMPLOYMENT_TYPES = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"];
 
 const demoJobs: PublicJob[] = [
   {
@@ -39,15 +50,25 @@ const demoJobs: PublicJob[] = [
     isActive: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    company: {
+      id: 0,
+      name: "Empresa Demo",
+      picture: null,
+      headline: "Equipo de tecnología",
+      location: "Chile",
+      website: null,
+    },
   },
 ];
 
 export default function JobsPage() {
   const { LL } = useI18nContext();
+  usePageMeta("Empleos | ASCALEdin", LL.jobsPage.subtitle());
   const [jobs, setJobs] = useState<PublicJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [usingDemoData, setUsingDemoData] = useState(false);
+  const [employmentTypeFilter, setEmploymentTypeFilter] = useState("ALL");
 
   function formatEmploymentType(value: string) {
     switch (value) {
@@ -58,6 +79,13 @@ export default function JobsPage() {
       default: return value;
     }
   }
+
+  const filteredJobs =
+    employmentTypeFilter === "ALL"
+      ? jobs
+      : jobs.filter((job) => job.employmentType === employmentTypeFilter);
+
+  const hasActiveFilters = employmentTypeFilter !== "ALL";
 
   useEffect(() => {
     async function loadJobs() {
@@ -180,8 +208,91 @@ export default function JobsPage() {
                   </div>
                 )}
 
-                <div style={{ display: "grid", gap: "18px" }}>
-                  {jobs.map((job) => (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    justifyContent: "space-between",
+                    gap: "14px",
+                    flexWrap: "wrap",
+                    marginBottom: "18px",
+                  }}
+                >
+                  <label
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      color: "#cbd5e1",
+                      fontSize: "14px",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {LL.jobsPage.filterLabel()}
+                    <select
+                      value={employmentTypeFilter}
+                      onChange={(event) =>
+                        setEmploymentTypeFilter(event.target.value)
+                      }
+                      style={{
+                        minHeight: "42px",
+                        minWidth: "220px",
+                        border: "1px solid rgba(148, 163, 184, 0.16)",
+                        background: "rgba(15, 23, 42, 0.72)",
+                        color: "#f8fafc",
+                        borderRadius: "14px",
+                        padding: "0 12px",
+                      }}
+                    >
+                      <option value="ALL">{LL.jobsPage.allTypes()}</option>
+                      {EMPLOYMENT_TYPES.map((type) => (
+                        <option key={type} value={type}>
+                          {formatEmploymentType(type)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {hasActiveFilters && (
+                    <button
+                      type="button"
+                      className="nav-secondary-button"
+                      onClick={() => setEmploymentTypeFilter("ALL")}
+                    >
+                      {LL.jobsPage.clearFilters()}
+                    </button>
+                  )}
+                </div>
+
+                <p
+                  style={{
+                    color: "#bfdbfe",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    margin: "0 0 18px",
+                    textAlign: "left",
+                  }}
+                >
+                  {LL.jobsPage.resultsCount(filteredJobs.length)}
+                </p>
+
+                {filteredJobs.length === 0 ? (
+                  <div
+                    style={{
+                      background: "rgba(15, 23, 42, 0.45)",
+                      border: "1px solid rgba(148, 163, 184, 0.1)",
+                      borderRadius: "24px",
+                      padding: "24px",
+                      backdropFilter: "blur(14px)",
+                      textAlign: "left",
+                      color: "#94a3b8",
+                    }}
+                  >
+                    {LL.jobsPage.noFilteredResults()}
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gap: "18px" }}>
+                    {filteredJobs.map((job) => (
                     <article
                       key={job.id}
                       style={{
@@ -207,6 +318,57 @@ export default function JobsPage() {
                           <h2 style={{ margin: "0 0 10px", color: "#f8fafc" }}>
                             {job.title}
                           </h2>
+
+                          {job.company && (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                                marginBottom: "12px",
+                                color: "#cbd5e1",
+                              }}
+                            >
+                              {job.company.picture ? (
+                                <img
+                                  src={job.company.picture}
+                                  alt={job.company.name ?? LL.jobsPage.companyFallback()}
+                                  style={{
+                                    width: "32px",
+                                    height: "32px",
+                                    borderRadius: "999px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              ) : (
+                                <span
+                                  style={{
+                                    width: "32px",
+                                    height: "32px",
+                                    borderRadius: "999px",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    background: "rgba(59, 130, 246, 0.18)",
+                                    color: "#bfdbfe",
+                                    fontWeight: 800,
+                                  }}
+                                >
+                                  {(job.company.name ?? LL.jobsPage.companyFallback())
+                                    .charAt(0)
+                                    .toUpperCase()}
+                                </span>
+                              )}
+                              <span>
+                                <strong>
+                                  {job.company.name ?? LL.jobsPage.companyFallback()}
+                                </strong>
+                                {job.company.headline
+                                  ? ` · ${job.company.headline}`
+                                  : ""}
+                              </span>
+                            </div>
+                          )}
 
                           <div
                             style={{
@@ -271,8 +433,9 @@ export default function JobsPage() {
                         {job.description}
                       </p>
                     </article>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>

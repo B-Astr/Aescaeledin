@@ -30,6 +30,11 @@ type MeUser = {
   picture: string | null;
 };
 
+type ToastState = {
+  type: "success" | "error";
+  message: string;
+};
+
 export default function ProServicesPage() {
   const navigate = useNavigate();
   const { LL } = useI18nContext();
@@ -38,6 +43,19 @@ export default function ProServicesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState<MeUser | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
+
+  useEffect(() => {
+    if (!toast) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setToast(null);
+    }, 3500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [toast]);
 
   useEffect(() => {
     async function loadData() {
@@ -96,6 +114,8 @@ export default function ProServicesPage() {
     if (!token) return;
 
     try {
+      setToast(null);
+
       const res = await fetch(
         `${API_URL}/api/pro/services/${serviceId}/deactivate`,
         {
@@ -109,7 +129,7 @@ export default function ProServicesPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data?.error || "No se pudo desactivar el servicio");
+        throw new Error(data?.error || LL.proServicesPage.deactivateError());
       }
 
       setServices((prev) =>
@@ -117,8 +137,19 @@ export default function ProServicesPage() {
           service.id === serviceId ? { ...service, isActive: false } : service
         )
       );
+
+      setToast({
+        type: "success",
+        message: LL.proServicesPage.serviceDeactivated(),
+      });
     } catch (err) {
-      alert(String(err));
+      setToast({
+        type: "error",
+        message:
+          err instanceof Error
+            ? err.message
+            : LL.proServicesPage.deactivateError(),
+      });
     }
   }
 
@@ -146,6 +177,12 @@ export default function ProServicesPage() {
               {LL.proServicesPage.createService()}
             </Link>
           </div>
+
+          {toast && (
+            <div className={`page-toast ${toast.type}`} role="status">
+              {toast.message}
+            </div>
+          )}
 
           {loading ? (
             <div className="company-jobs-empty-card">

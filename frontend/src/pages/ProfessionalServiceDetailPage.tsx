@@ -7,6 +7,7 @@ import LocationMapLink from "../components/LocationMapLink";
 import "./JobDetailPage.css";
 import "./HomePage.css";
 import { useI18nContext } from "../i18n";
+import { usePageMeta } from "../lib/usePageMeta";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -47,6 +48,11 @@ export default function ProfessionalServiceDetailPage() {
   const [error, setError] = useState("");
   const [selecting, setSelecting] = useState(false);
   const [selectMessage, setSelectMessage] = useState("");
+
+  usePageMeta(
+    service ? `${service.title} | ASCALEdin` : "Servicio profesional | ASCALEdin",
+    service?.description.slice(0, 155) ?? LL.professionalsPage.subtitle()
+  );
 
   useEffect(() => {
     async function loadService() {

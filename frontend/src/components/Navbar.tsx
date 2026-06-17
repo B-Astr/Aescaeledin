@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./Navbar.css";
 import { useI18nContext } from '../i18n';
+import NavbarSearch from "./NavbarSearch";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -14,6 +15,7 @@ type CurrentTab =
   | "professionals"
   | "companies"
   | "profile"
+  | "my_applications"
   | "login"
   | "company_jobs"
   | "company_jobs_new"
@@ -37,6 +39,7 @@ export default function Navbar() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
+  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -107,6 +110,7 @@ export default function Navbar() {
     setUserRole(null);
     setMenuOpen(false);
     setDesktopMenuOpen(false);
+    setDesktopSearchOpen(false);
     navigate("/");
   }
 
@@ -121,6 +125,7 @@ export default function Navbar() {
     if (path.startsWith("/professionals/")) return "professionals";
     if (path === "/companies") return "companies";
     if (path.startsWith("/profile")) return "profile";
+    if (path.startsWith("/my-applications")) return "my_applications";
     if (path.startsWith("/login")) return "login";
 
     if (path === "/company/jobs") return "company_jobs";
@@ -143,6 +148,7 @@ export default function Navbar() {
 
   const isCompany = isLoggedIn && userRole === "EMPRESA";
   const isProfessional = isLoggedIn && userRole === "PRO";
+  const isClient = isLoggedIn && userRole === "CLIENTE";
   const isMenuActive =
     currentTab === "jobs" ||
     currentTab === "professionals" ||
@@ -150,6 +156,7 @@ export default function Navbar() {
     currentTab === "company_jobs" ||
     currentTab === "company_jobs_new" ||
     currentTab === "company_requests" ||
+    currentTab === "my_applications" ||
     currentTab === "pro_services" ||
     currentTab === "pro_services_new";
 
@@ -158,7 +165,9 @@ export default function Navbar() {
   }`;
 
   return (
-    <header className="home-navbar">
+    <header
+      className={`home-navbar ${desktopSearchOpen ? "navbar-search-open" : ""}`}
+    >
       <div className="home-navbar-top">
         <div className="home-navbar-brand">
           <div className="home-logo-dot" />
@@ -166,17 +175,21 @@ export default function Navbar() {
         </div>
 
         <nav className="home-navbar-tabs desktop-only">
-          <Link to="/" className={tabClass("home")}>
-            {LL.navbar.home()}
-          </Link>
+          {!desktopSearchOpen && (
+            <>
+              <Link to="/" className={tabClass("home")}>
+                {LL.navbar.home()}
+              </Link>
 
-          <Link to="/about" className={tabClass("about")}>
-            {LL.navbar.about()}
-          </Link>
+              <Link to="/about" className={tabClass("about")}>
+                {LL.navbar.about()}
+              </Link>
 
-          <Link to="/info" className={tabClass("info")}>
-            {LL.navbar.info()}
-          </Link>
+              <Link to="/info" className={tabClass("info")}>
+                {LL.navbar.info()}
+              </Link>
+            </>
+          )}
 
           {!isLoggedIn ? (
             <>
@@ -204,7 +217,7 @@ export default function Navbar() {
                 <span className="navbar-menu-icon" aria-hidden="true">
                   ☰
                 </span>
-                <span>Menú</span>
+                <span>{LL.navbar.menu()}</span>
                 <span className="navbar-menu-arrow" aria-hidden="true">
                   {desktopMenuOpen ? "▴" : "▾"}
                 </span>
@@ -215,6 +228,36 @@ export default function Navbar() {
                   desktopMenuOpen ? "open" : ""
                 }`}
               >
+                {desktopSearchOpen && (
+                  <>
+                    <Link
+                      to="/"
+                      className="navbar-menu-item"
+                      onClick={closeMenu}
+                    >
+                      {LL.navbar.home()}
+                    </Link>
+
+                    <Link
+                      to="/about"
+                      className="navbar-menu-item"
+                      onClick={closeMenu}
+                    >
+                      {LL.navbar.about()}
+                    </Link>
+
+                    <Link
+                      to="/info"
+                      className="navbar-menu-item"
+                      onClick={closeMenu}
+                    >
+                      {LL.navbar.info()}
+                    </Link>
+
+                    <div className="navbar-menu-divider" />
+                  </>
+                )}
+
                 <Link
                   to="/jobs"
                   className="navbar-menu-item"
@@ -238,6 +281,19 @@ export default function Navbar() {
                 >
                   {LL.navbar.companies()}
                 </Link>
+
+                {isClient && (
+                  <>
+                    <div className="navbar-menu-divider" />
+                    <Link
+                      to="/my-applications"
+                      className="navbar-menu-item"
+                      onClick={closeMenu}
+                    >
+                      {LL.nbsesionIniciada.myApplications()}
+                    </Link>
+                  </>
+                )}
 
                 {isProfessional && (
                   <>
@@ -285,6 +341,36 @@ export default function Navbar() {
                     </Link>
                   </>
                 )}
+
+                {desktopSearchOpen && (
+                  <>
+                    <div className="navbar-menu-divider" />
+                    <Link
+                      to="/profile"
+                      className="navbar-menu-item"
+                      onClick={closeMenu}
+                    >
+                      {LL.nbsesionIniciada.profil()}
+                    </Link>
+                    <button
+                      type="button"
+                      className="navbar-menu-item navbar-menu-action"
+                      onClick={() => {
+                        setLocale(locale === 'es' ? 'en' : 'es');
+                        setDesktopMenuOpen(false);
+                      }}
+                    >
+                      {locale === 'es' ? "EN" : "ES"}
+                    </button>
+                    <button
+                      type="button"
+                      className="navbar-menu-item navbar-menu-action"
+                      onClick={handleLogout}
+                    >
+                      {LL.nbsesionIniciada.logout()}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -292,16 +378,20 @@ export default function Navbar() {
 
         <div className="home-navbar-actions desktop-only">
           {isLoggedIn && (
+            <NavbarSearch onOpenChange={setDesktopSearchOpen} />
+          )}
+
+          {isLoggedIn && !desktopSearchOpen && (
             <Link to="/profile" className="nav-secondary-button">
               {LL.nbsesionIniciada.profil()}
             </Link>
           )}
 
-          {isLoggedIn && userName && (
+          {isLoggedIn && !desktopSearchOpen && userName && (
             <span className="navbar-user-name">{userName}</span>
           )}
 
-          {isLoggedIn && (
+          {(!isLoggedIn || !desktopSearchOpen) && (
             <button
               onClick={() => setLocale(locale === 'es' ? 'en' : 'es')}
               className="nav-secondary-button"
@@ -310,11 +400,11 @@ export default function Navbar() {
             </button>
           )}
 
-          {isLoggedIn ? (
+          {isLoggedIn && !desktopSearchOpen ? (
             <button onClick={handleLogout} className="nav-primary-button">
               {LL.nbsesionIniciada.logout()}
             </button>
-          ) : (
+          ) : !isLoggedIn ? (
             <>
               <Link to="/login?mode=login" className="nav-secondary-button">
                 {LL.nbsesionIniciada.signin()}
@@ -323,14 +413,14 @@ export default function Navbar() {
                 {LL.loginPage.createAccountOption()}
               </Link>
             </>
-          )}
+          ) : null}
         </div>
 
         <button
           className={`home-menu-toggle mobile-only ${menuOpen ? "active" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
           type="button"
-          aria-label="Abrir menú"
+          aria-label={LL.navbar.openMenu()}
           aria-expanded={menuOpen}
         >
           <span />
@@ -430,9 +520,19 @@ export default function Navbar() {
                 className="nav-secondary-button"
                 onClick={closeMenu}
               >
-                My Jobs
+                {LL.nbcompany.myJobs()}
               </Link>
             </>
+          )}
+
+          {isClient && (
+            <Link
+              to="/my-applications"
+              className="nav-secondary-button"
+              onClick={closeMenu}
+            >
+              {LL.nbsesionIniciada.myApplications()}
+            </Link>
           )}
 
           {isProfessional && (
@@ -456,6 +556,10 @@ export default function Navbar() {
           )}
 
           {isLoggedIn && (
+            <NavbarSearch mobile onNavigate={closeMenu} />
+          )}
+
+          {isLoggedIn && (
             <Link
               to="/profile"
               className="nav-secondary-button"
@@ -465,14 +569,12 @@ export default function Navbar() {
             </Link>
           )}
 
-          {isLoggedIn && (
-            <button
-              onClick={() => setLocale(locale === 'es' ? 'en' : 'es')}
-              className="nav-secondary-button"
-            >
-              {locale === 'es' ? "EN" : "ES"}
-            </button>
-          )}
+          <button
+            onClick={() => setLocale(locale === 'es' ? 'en' : 'es')}
+            className="nav-secondary-button"
+          >
+            {locale === 'es' ? "EN" : "ES"}
+          </button>
 
           {isLoggedIn ? (
             <button onClick={handleLogout} className="nav-primary-button">

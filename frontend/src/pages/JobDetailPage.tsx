@@ -7,6 +7,7 @@ import LocationMapLink from "../components/LocationMapLink";
 import "./HomePage.css";
 import "./JobDetailPage.css";
 import { useI18nContext } from "../i18n";
+import { usePageMeta } from "../lib/usePageMeta";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 const MAX_MESSAGE = 1000;
@@ -22,6 +23,14 @@ type JobDetail = {
   employmentType: string;
   isActive: boolean;
   createdAt?: string;
+  company?: {
+    id: number;
+    name: string | null;
+    picture: string | null;
+    headline: string | null;
+    location: string | null;
+    website: string | null;
+  } | null;
 };
 
 export default function JobDetailPage() {
@@ -42,6 +51,11 @@ export default function JobDetailPage() {
   const [formError, setFormError] = useState("");
   const [applying, setApplying] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
+
+  usePageMeta(
+    job ? `${job.title} | ASCALEdin` : "Empleo | ASCALEdin",
+    job?.description.slice(0, 155) ?? LL.jobsPage.subtitle()
+  );
 
   function formatEmploymentType(value: string) {
     switch (value) {
@@ -261,6 +275,39 @@ export default function JobDetailPage() {
                   </Link>
 
                   <h1 className="job-title">{job.title}</h1>
+
+                  {job.company && (
+                    <div className="job-company-card">
+                      {job.company.picture ? (
+                        <img
+                          src={job.company.picture}
+                          alt={job.company.name ?? LL.jobsPage.companyFallback()}
+                          className="job-company-avatar"
+                        />
+                      ) : (
+                        <div className="job-company-avatar job-company-avatar-fallback">
+                          {(job.company.name ?? LL.jobsPage.companyFallback())
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
+                      )}
+
+                      <div>
+                        <p className="job-company-label">
+                          {LL.jobsPage.companyLabel()}
+                        </p>
+                        <h2 className="job-company-name">
+                          {job.company.name ?? LL.jobsPage.companyFallback()}
+                        </h2>
+                        {job.company.headline && (
+                          <p className="job-company-meta">{job.company.headline}</p>
+                        )}
+                        {job.company.location && (
+                          <p className="job-company-meta">{job.company.location}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="job-tags">
                     <span className="job-tag">

@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import LocationMapLink from "../components/LocationMapLink";
 import "./HomePage.css";
 import { useI18nContext } from "../i18n";
+import { usePageMeta } from "../lib/usePageMeta";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -58,6 +59,7 @@ const demoServices: ProfessionalService[] = [
 
 export default function ProfessionalsPage() {
   const { LL } = useI18nContext();
+  usePageMeta("Profesionales | ASCALEdin", LL.professionalsPage.subtitle());
   const [services, setServices] = useState<ProfessionalService[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -204,6 +206,18 @@ export default function ProfessionalsPage() {
                     {LL.professionalsPage.demoNotice()}
                   </div>
                 )}
+
+                <p
+                  style={{
+                    color: "#bfdbfe",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    margin: "0 0 18px",
+                    textAlign: "left",
+                  }}
+                >
+                  {LL.professionalsPage.resultsCount(services.length)}
+                </p>
 
                 <div style={{ display: "grid", gap: "18px" }}>
                   {services.map((service) => (

@@ -27,6 +27,7 @@ type UserProfile = {
   education: string | null;
   skills: string | null;
   resumeUrl: string | null;
+  publicProfileVisible: boolean;
 
   createdAt?: string;
   updatedAt?: string;
@@ -54,6 +55,7 @@ export default function ProfilePage() {
   const [education, setEducation] = useState("");
   const [skills, setSkills] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
+  const [publicProfileVisible, setPublicProfileVisible] = useState(true);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -89,6 +91,7 @@ export default function ProfilePage() {
         setEducation(data.user.education || "");
         setSkills(data.user.skills || "");
         setResumeUrl(data.user.resumeUrl || "");
+        setPublicProfileVisible(Boolean(data.user.publicProfileVisible));
       })
       .catch((err) => {
         setError(String(err));
@@ -132,6 +135,7 @@ export default function ProfilePage() {
           education,
           skills,
           resumeUrl,
+          publicProfileVisible,
         }),
       });
 
@@ -284,6 +288,33 @@ export default function ProfilePage() {
                     />
                   </div>
                 </div>
+
+                {user.role === "PRO" && (
+                  <div className="profile-visibility-card">
+                    <div>
+                      <h2>{LL.profilePage.publicVisibilityTitle()}</h2>
+                      <p>{LL.profilePage.publicVisibilityDesc()}</p>
+                    </div>
+
+                    <label className="profile-switch">
+                      <input
+                        type="checkbox"
+                        checked={publicProfileVisible}
+                        onChange={(event) =>
+                          setPublicProfileVisible(event.target.checked)
+                        }
+                      />
+                      <span className="profile-switch-track">
+                        <span className="profile-switch-thumb" />
+                      </span>
+                      <span>
+                        {publicProfileVisible
+                          ? LL.profilePage.publicVisibilityOn()
+                          : LL.profilePage.publicVisibilityOff()}
+                      </span>
+                    </label>
+                  </div>
+                )}
 
                 <div className="profile-field profile-field-full">
                   <label>{LL.profilePage.bioLabel()}</label>

@@ -29,6 +29,11 @@ type MeUser = {
   picture: string | null;
 };
 
+type ToastState = {
+  type: "success" | "error";
+  message: string;
+};
+
 export default function CompaniesPage() {
   const navigate = useNavigate();
   const { LL } = useI18nContext();
@@ -37,6 +42,19 @@ export default function CompaniesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [requestingId, setRequestingId] = useState<number | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
+
+  useEffect(() => {
+    if (!toast) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setToast(null);
+    }, 3500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [toast]);
 
   useEffect(() => {
     async function loadData() {
@@ -94,6 +112,7 @@ export default function CompaniesPage() {
 
     try {
       setRequestingId(companyId);
+      setToast(null);
 
       const res = await fetch(`${API_URL}/api/companies/${companyId}/request`, {
         method: "POST",
@@ -105,12 +124,19 @@ export default function CompaniesPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data?.error || "No se pudo enviar la solicitud");
+        throw new Error(data?.error || LL.companiesPage.requestError());
       }
 
-      alert(LL.companiesPage.requestSent());
+      setToast({
+        type: "success",
+        message: LL.companiesPage.requestSent(),
+      });
     } catch (err) {
-      alert(String(err));
+      setToast({
+        type: "error",
+        message:
+          err instanceof Error ? err.message : LL.companiesPage.requestError(),
+      });
     } finally {
       setRequestingId(null);
     }
@@ -136,6 +162,12 @@ export default function CompaniesPage() {
               </p>
             </div>
           </div>
+
+          {toast && (
+            <div className={`page-toast ${toast.type}`} role="status">
+              {toast.message}
+            </div>
+          )}
 
           {loading ? (
             <div className="company-jobs-empty-card">

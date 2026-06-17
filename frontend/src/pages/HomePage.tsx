@@ -4,9 +4,11 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./HomePage.css";
 import { useI18nContext } from "../i18n";
+import { usePageMeta } from "../lib/usePageMeta";
 
 export default function HomePage() {
   const { LL } = useI18nContext();
+  usePageMeta("ASCALEdin", "Plataforma de empleos y servicios profesionales.");
   const isLoggedIn = !!sessionStorage.getItem("token");
 
   return (

@@ -11,6 +11,7 @@ import ProfilePage from "./pages/ProfilePage";
 // Jobs (empresa + público)
 import JobsPage from "./pages/JobsPage";
 import JobDetailPage from "./pages/JobDetailPage";
+import MyApplicationsPage from "./pages/MyApplicationsPage";
 import CompanyJobsPage from "./pages/CompanyJobsPage";
 import CreateJobPage from "./pages/CreateJobPage";
 import EditJobPage from "./pages/EditJobPage";
@@ -30,6 +31,7 @@ import CompanyRequestsPage from "./pages/CompanyRequestsPage";
 
 // Seguridad
 import ProtectedRoute from "./components/ProtectedRoute";
+import HelpChatButton from "./components/HelpChatButton";
 
 export default function App() {
   return (
@@ -57,6 +59,15 @@ export default function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-applications"
+          element={
+            <ProtectedRoute>
+              <MyApplicationsPage />
             </ProtectedRoute>
           }
         />
@@ -158,6 +169,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
+      <HelpChatButton />
     </BrowserRouter>
   );
 }

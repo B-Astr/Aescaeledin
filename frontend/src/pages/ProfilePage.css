@@ -116,6 +116,74 @@
   resize: vertical;
 }
 
+.profile-visibility-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid rgba(96, 165, 250, 0.18);
+  background: rgba(59, 130, 246, 0.08);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.profile-visibility-card h2 {
+  margin: 0 0 6px;
+  color: #f8fafc;
+  font-size: 18px;
+}
+
+.profile-visibility-card p {
+  margin: 0;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.profile-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.profile-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.profile-switch-track {
+  width: 48px;
+  height: 28px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.profile-switch-thumb {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #f8fafc;
+  transition: transform 0.2s;
+}
+
+.profile-switch input:checked + .profile-switch-track {
+  background: rgba(59, 130, 246, 0.45);
+  border-color: rgba(147, 197, 253, 0.55);
+}
+
+.profile-switch input:checked + .profile-switch-track .profile-switch-thumb {
+  transform: translateX(20px);
+}
+
 .profile-message,
 .profile-error {
   padding: 14px 16px;
@@ -160,6 +228,11 @@
   }
 
   .profile-actions {
+    flex-direction: column;
+  }
+
+  .profile-visibility-card {
+    align-items: flex-start;
     flex-direction: column;
   }
 
