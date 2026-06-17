@@ -37,6 +37,7 @@ function pickUser(user: User) {
     education: user.education ?? null,
     skills: user.skills ?? null,
     resumeUrl: user.resumeUrl ?? null,
+    publicProfileVisible: Boolean(user.publicProfileVisible),
 
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
@@ -73,17 +74,13 @@ function normalizeIntent(input?: string): "login" | "register" {
  */
 export async function googleLogin(req: Request, res: Response) {
   try {
-    const { idToken, credential, role, intent, mode } = req.body as {
+    const { idToken, role, intent } = req.body as {
       idToken?: string;
-      credential?: string;
       role?: "CLIENTE" | "EMPRESA" | "PRO";
       intent?: string;
-      mode?: string;
     };
 
-    const googleIdToken = idToken || credential;
-
-    if (!googleIdToken) {
+    if (!idToken) {
       return res.status(400).json({
         error: "idToken es requerido",
       });
@@ -99,7 +96,7 @@ export async function googleLogin(req: Request, res: Response) {
     const googleClient = getGoogleClient();
 
     const ticket = await googleClient.verifyIdToken({
-      idToken: googleIdToken,
+      idToken,
       audience: clientId,
     });
 
@@ -123,7 +120,7 @@ export async function googleLogin(req: Request, res: Response) {
     }
 
     const selectedRole = normalizeSignupRole(role);
-    const selectedIntent = normalizeIntent(intent || mode);
+    const selectedIntent = normalizeIntent(intent);
 
     let user =
       (await User.findOne({ where: { email } })) ??
@@ -269,6 +266,7 @@ export async function updateProfile(req: Request, res: Response) {
       education,
       skills,
       resumeUrl,
+      publicProfileVisible,
     } = req.body as {
       name?: string;
       headline?: string;
@@ -282,6 +280,7 @@ export async function updateProfile(req: Request, res: Response) {
       education?: string;
       skills?: string;
       resumeUrl?: string;
+      publicProfileVisible?: boolean;
     };
 
     if (typeof name === "string") {
@@ -330,6 +329,10 @@ export async function updateProfile(req: Request, res: Response) {
 
     if (typeof resumeUrl === "string") {
       user.resumeUrl = resumeUrl.trim() || null;
+    }
+
+    if (user.role === "PRO" && typeof publicProfileVisible === "boolean") {
+      user.publicProfileVisible = publicProfileVisible;
     }
 
     await user.save();

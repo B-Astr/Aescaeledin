@@ -280,7 +280,10 @@ export async function getPublicProfessionalServices(_req: Request, res: Response
     const professionals =
       professionalIds.length > 0
         ? await User.findAll({
-            where: { id: professionalIds },
+            where: {
+              id: professionalIds,
+              publicProfileVisible: true,
+            },
           })
         : [];
 
@@ -298,8 +301,12 @@ export async function getPublicProfessionalServices(_req: Request, res: Response
       ])
     );
 
+    const visibleServices = services.filter((service) =>
+      usersById.has(service.professionalUserId)
+    );
+
     return res.json({
-      services: services.map((service) => ({
+      services: visibleServices.map((service) => ({
         ...pickService(service),
         professional: usersById.get(service.professionalUserId) ?? null,
       })),
@@ -329,26 +336,33 @@ export async function getPublicProfessionalServiceById(req: Request, res: Respon
       return res.status(404).json({ error: "Servicio no encontrado" });
     }
 
-    const professional = await User.findByPk(service.professionalUserId);
+    const professional = await User.findOne({
+      where: {
+        id: service.professionalUserId,
+        publicProfileVisible: true,
+      },
+    });
+
+    if (!professional) {
+      return res.status(404).json({ error: "Servicio no encontrado" });
+    }
 
     return res.json({
       service: {
         ...pickService(service),
-        professional: professional
-          ? {
-              id: professional.id,
-              name: professional.name ?? null,
-              email: professional.email,
-              picture: professional.picture ?? null,
-              headline: professional.headline ?? null,
-              bio: professional.bio ?? null,
-              phone: professional.phone ?? null,
-              location: professional.location ?? null,
-              website: professional.website ?? null,
-              linkedinUrl: professional.linkedinUrl ?? null,
-              githubUrl: professional.githubUrl ?? null,
-            }
-          : null,
+        professional: {
+          id: professional.id,
+          name: professional.name ?? null,
+          email: professional.email,
+          picture: professional.picture ?? null,
+          headline: professional.headline ?? null,
+          bio: professional.bio ?? null,
+          phone: professional.phone ?? null,
+          location: professional.location ?? null,
+          website: professional.website ?? null,
+          linkedinUrl: professional.linkedinUrl ?? null,
+          githubUrl: professional.githubUrl ?? null,
+        },
       },
     });
   } catch (error) {

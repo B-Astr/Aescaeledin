@@ -1,6 +1,7 @@
 // backend/src/controllers/companyJobs.controller.ts
 import type { Request, Response } from "express";
 import { JobPost } from "../models/JobPost";
+import { User } from "../models/User";
 
 function pickJob(job: JobPost) {
   return {
@@ -17,6 +18,42 @@ function pickJob(job: JobPost) {
     createdAt: job.createdAt,
     updatedAt: job.updatedAt,
   };
+}
+
+function pickCompany(user: User | null) {
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    name: user.name ?? null,
+    picture: user.picture ?? null,
+    headline: user.headline ?? null,
+    location: user.location ?? null,
+    website: user.website ?? null,
+  };
+}
+
+async function attachCompaniesToJobs(jobs: JobPost[]) {
+  const companyIds = [...new Set(jobs.map((job) => job.companyUserId))];
+  const companies =
+    companyIds.length > 0
+      ? await User.findAll({
+          where: {
+            id: companyIds,
+            role: "EMPRESA",
+          },
+        })
+      : [];
+  const companiesById = new Map(
+    companies.map((company) => [company.id, pickCompany(company)])
+  );
+
+  return jobs.map((job) => ({
+    ...pickJob(job),
+    company: companiesById.get(job.companyUserId) ?? null,
+  }));
 }
 
 function normalizeCoordinate(
@@ -324,7 +361,7 @@ export async function getPublicJobPosts(_req: Request, res: Response) {
     });
 
     return res.json({
-      jobs: jobs.map(pickJob),
+      jobs: await attachCompaniesToJobs(jobs),
     });
   } catch (error) {
     console.error("getPublicJobPosts error:", error);
@@ -359,8 +396,18 @@ export async function getPublicJobById(req: Request, res: Response) {
       });
     }
 
+    const company = await User.findOne({
+      where: {
+        id: job.companyUserId,
+        role: "EMPRESA",
+      },
+    });
+
     return res.json({
-      job: pickJob(job),
+      job: {
+        ...pickJob(job),
+        company: pickCompany(company),
+      },
     });
   } catch (error) {
     console.error("getPublicJobById error:", error);

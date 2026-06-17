@@ -35,6 +35,7 @@ export class User extends Model<
   declare education: string | null;
   declare skills: string | null;
   declare resumeUrl: string | null;
+  declare publicProfileVisible: CreationOptional<boolean>;
 
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -150,6 +151,13 @@ User.init(
       type: DataTypes.STRING(500),
       allowNull: true,
       field: "resume_url",
+    },
+
+    publicProfileVisible: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      field: "public_profile_visible",
     },
 
     createdAt: {

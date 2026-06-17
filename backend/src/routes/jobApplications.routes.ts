@@ -3,6 +3,8 @@ import { Router } from "express";
 import {
   applyToJob,
   checkIfApplied,
+  getJobApplicationById,
+  getMyJobApplications,
   getApplicationsForCompanyJob,
   updateApplicationStatus,
 } from "../controllers/jobApplications.controller";
@@ -15,6 +17,12 @@ router.get("/jobs/:id/applied", requireFullyAuthenticated, checkIfApplied);
 
 // Cliente postula
 router.post("/jobs/:id/apply", requireFullyAuthenticated, applyToJob);
+
+// Usuario autenticado lista sus postulaciones
+router.get("/applications/mine", requireFullyAuthenticated, getMyJobApplications);
+
+// Usuario autorizado consulta una postulación específica
+router.get("/applications/:id", requireFullyAuthenticated, getJobApplicationById);
 
 // Empresa ve postulaciones de SU job
 router.get(
