@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import JobLocationValidator, {
+  type ValidatedJobLocation,
+} from "../components/JobLocationValidator";
 import "./ProfilePage.css";
 import { useI18nContext } from "../i18n";
 
@@ -20,6 +23,9 @@ type UserProfile = {
   bio: string | null;
   phone: string | null;
   location: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  placeId: string | null;
   website: string | null;
   linkedinUrl: string | null;
   githubUrl: string | null;
@@ -48,6 +54,12 @@ export default function ProfilePage() {
   const [bio, setBio] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [placeId, setPlaceId] = useState<string | null>(null);
+  const [isLocationValidated, setIsLocationValidated] = useState(false);
+  const [locationNeedsValidation, setLocationNeedsValidation] =
+    useState(false);
   const [website, setWebsite] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
@@ -84,6 +96,13 @@ export default function ProfilePage() {
         setBio(data.user.bio || "");
         setPhone(data.user.phone || "");
         setLocation(data.user.location || "");
+        setLatitude(data.user.latitude ?? null);
+        setLongitude(data.user.longitude ?? null);
+        setPlaceId(data.user.placeId ?? null);
+        setIsLocationValidated(
+          data.user.latitude != null && data.user.longitude != null
+        );
+        setLocationNeedsValidation(false);
         setWebsite(data.user.website || "");
         setLinkedinUrl(data.user.linkedinUrl || "");
         setGithubUrl(data.user.githubUrl || "");
@@ -111,6 +130,12 @@ export default function ProfilePage() {
     const token = sessionStorage.getItem("token");
     if (!token) return;
 
+    if (locationNeedsValidation && location.trim()) {
+      setMessage("");
+      setError(LL.profileLocationValidation.validationRequired());
+      return;
+    }
+
     try {
       setSaving(true);
       setMessage("");
@@ -128,6 +153,9 @@ export default function ProfilePage() {
           bio,
           phone,
           location,
+          latitude,
+          longitude,
+          placeId,
           website,
           linkedinUrl,
           githubUrl,
@@ -147,6 +175,15 @@ export default function ProfilePage() {
 
       setUser(data.user);
 
+      setLocation(data.user.location || "");
+      setLatitude(data.user.latitude ?? null);
+      setLongitude(data.user.longitude ?? null);
+      setPlaceId(data.user.placeId ?? null);
+      setIsLocationValidated(
+        data.user.latitude != null && data.user.longitude != null
+      );
+      setLocationNeedsValidation(false);
+
       if (data.user?.name) {
         sessionStorage.setItem("user_name", data.user.name);
       }
@@ -165,6 +202,26 @@ export default function ProfilePage() {
     sessionStorage.removeItem("user_picture");
     sessionStorage.removeItem("user_role");
     navigate("/");
+  }
+
+  function handleLocationChange(value: string) {
+    setLocation(value);
+    setLatitude(null);
+    setLongitude(null);
+    setPlaceId(null);
+    setIsLocationValidated(false);
+    setLocationNeedsValidation(value.trim().length > 0);
+  }
+
+  function handleLocationConfirmed(validatedLocation: ValidatedJobLocation) {
+    setLocation(validatedLocation.location);
+    setLatitude(validatedLocation.latitude);
+    setLongitude(validatedLocation.longitude);
+    setPlaceId(validatedLocation.placeId);
+    setIsLocationValidated(true);
+    setLocationNeedsValidation(false);
+    setError("");
+    setMessage(LL.profileLocationValidation.validated());
   }
 
   return (
@@ -247,8 +304,27 @@ export default function ProfilePage() {
                     <label>{LL.profilePage.locationLabel()}</label>
                     <input
                       value={location}
-                      onChange={(e) => setLocation(e.target.value)}
+                      onChange={(e) => handleLocationChange(e.target.value)}
                       placeholder={LL.profilePage.locationPlaceholder()}
+                    />
+                    <JobLocationValidator
+                      location={location}
+                      isValidated={isLocationValidated}
+                      onConfirm={handleLocationConfirmed}
+                      labels={{
+                        emptyLocation:
+                          LL.profileLocationValidation.emptyLocation(),
+                        apiKeyMissing:
+                          LL.profileLocationValidation.apiKeyMissing(),
+                        notFound: LL.profileLocationValidation.notFound(),
+                        validated: LL.profileLocationValidation.validated(),
+                        validating: LL.profileLocationValidation.validating(),
+                        validateButton:
+                          LL.profileLocationValidation.validateButton(),
+                        modalTitle: LL.profileLocationValidation.modalTitle(),
+                        close: LL.profileLocationValidation.close(),
+                        confirm: LL.profileLocationValidation.confirm(),
+                      }}
                     />
                   </div>
 
