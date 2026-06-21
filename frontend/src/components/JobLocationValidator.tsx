@@ -62,10 +62,23 @@ export type ValidatedJobLocation = {
   placeId: string | null;
 };
 
+type LocationValidatorLabels = {
+  emptyLocation: string;
+  apiKeyMissing: string;
+  notFound: string;
+  validated: string;
+  validating: string;
+  validateButton: string;
+  modalTitle: string;
+  close: string;
+  confirm: string;
+};
+
 type JobLocationValidatorProps = {
   location: string;
   isValidated: boolean;
   onConfirm: (location: ValidatedJobLocation) => void;
+  labels?: LocationValidatorLabels;
 };
 
 let googleMapsScriptPromise: Promise<GoogleMapsApi> | null = null;
@@ -156,8 +169,20 @@ export default function JobLocationValidator({
   location,
   isValidated,
   onConfirm,
+  labels,
 }: JobLocationValidatorProps) {
   const { LL } = useI18nContext();
+  const text = labels ?? {
+    emptyLocation: LL.jobLocationValidation.emptyLocation(),
+    apiKeyMissing: LL.jobLocationValidation.apiKeyMissing(),
+    notFound: LL.jobLocationValidation.notFound(),
+    validated: LL.jobLocationValidation.validated(),
+    validating: LL.jobLocationValidation.validating(),
+    validateButton: LL.jobLocationValidation.validateButton(),
+    modalTitle: LL.jobLocationValidation.modalTitle(),
+    close: LL.jobLocationValidation.close(),
+    confirm: LL.jobLocationValidation.confirm(),
+  };
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [isValidating, setIsValidating] = useState(false);
@@ -194,7 +219,7 @@ export default function JobLocationValidator({
     const trimmedLocation = location.trim();
 
     if (!trimmedLocation) {
-      setStatusMessage(LL.jobLocationValidation.emptyLocation());
+      setStatusMessage(text.emptyLocation);
       return;
     }
 
@@ -214,8 +239,8 @@ export default function JobLocationValidator({
     } catch (error) {
       const message =
         error instanceof Error && error.message === "missing-api-key"
-          ? LL.jobLocationValidation.apiKeyMissing()
-          : LL.jobLocationValidation.notFound();
+          ? text.apiKeyMissing
+          : text.notFound;
 
       setStatusMessage(message);
     } finally {
@@ -229,7 +254,7 @@ export default function JobLocationValidator({
     }
 
     onConfirm(pendingLocation);
-    setStatusMessage(LL.jobLocationValidation.validated());
+    setStatusMessage(text.validated);
     setIsModalOpen(false);
   }
 
@@ -242,14 +267,12 @@ export default function JobLocationValidator({
           onClick={handleValidateLocation}
           disabled={isValidating}
         >
-          {isValidating
-            ? LL.jobLocationValidation.validating()
-            : LL.jobLocationValidation.validateButton()}
+          {isValidating ? text.validating : text.validateButton}
         </button>
 
         {isValidated && (
           <span className="job-location-valid-badge">
-            {LL.jobLocationValidation.validated()}
+            {text.validated}
           </span>
         )}
       </div>
@@ -268,7 +291,7 @@ export default function JobLocationValidator({
           >
             <div className="job-location-modal-header">
               <h2 id="job-location-modal-title">
-                {LL.jobLocationValidation.modalTitle()}
+                {text.modalTitle}
               </h2>
               <p>{pendingLocation.location}</p>
             </div>
@@ -281,14 +304,14 @@ export default function JobLocationValidator({
                 className="nav-secondary-button"
                 onClick={() => setIsModalOpen(false)}
               >
-                {LL.jobLocationValidation.close()}
+                {text.close}
               </button>
               <button
                 type="button"
                 className="primary-home-button"
                 onClick={handleConfirmLocation}
               >
-                {LL.jobLocationValidation.confirm()}
+                {text.confirm}
               </button>
             </div>
           </div>

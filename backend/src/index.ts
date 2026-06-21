@@ -70,6 +70,27 @@ async function ensureSchemaCompatibility() {
       defaultValue: true,
     });
   }
+
+  if (usersTable && !Object.hasOwn(usersTable, "latitude")) {
+    await queryInterface.addColumn("users", "latitude", {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    });
+  }
+
+  if (usersTable && !Object.hasOwn(usersTable, "longitude")) {
+    await queryInterface.addColumn("users", "longitude", {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    });
+  }
+
+  if (usersTable && !Object.hasOwn(usersTable, "place_id")) {
+    await queryInterface.addColumn("users", "place_id", {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    });
+  }
 }
 
 app.get("/", (_req, res) => {

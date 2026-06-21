@@ -28,6 +28,9 @@ export class User extends Model<
   declare bio: string | null;
   declare phone: string | null;
   declare location: string | null;
+  declare latitude: number | null;
+  declare longitude: number | null;
+  declare placeId: string | null;
   declare website: string | null;
   declare linkedinUrl: string | null;
   declare githubUrl: string | null;
@@ -112,6 +115,22 @@ User.init(
     location: {
       type: DataTypes.STRING(255),
       allowNull: true,
+    },
+
+    latitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+
+    longitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+
+    placeId: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      field: "place_id",
     },
 
     website: {

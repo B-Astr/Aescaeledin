@@ -201,6 +201,18 @@ const es = {
     publicVisibilityOn: 'Visible',
     publicVisibilityOff: 'Oculto',
   },
+  profileLocationValidation: {
+    emptyLocation: 'Ingresa una ubicación para validar',
+    apiKeyMissing: 'Clave de API de Google Maps no configurada',
+    notFound: 'No se pudo validar la ubicación',
+    validated: 'Ubicación validada',
+    validating: 'Validando...',
+    validateButton: 'Validar ubicación en mapa',
+    modalTitle: 'Buscar ubicación',
+    close: 'Cerrar',
+    confirm: 'Confirmar ubicación',
+    validationRequired: 'Debes seleccionar una ubicación válida.',
+  },
   myApplicationsPage: {
     badge: 'Postulaciones',
     title: 'Mis postulaciones',

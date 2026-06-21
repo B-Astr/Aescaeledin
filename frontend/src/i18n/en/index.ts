@@ -201,6 +201,18 @@ const en: Translation = {
     publicVisibilityOn: 'Visible',
     publicVisibilityOff: 'Hidden',
   },
+  profileLocationValidation: {
+    emptyLocation: 'Enter a location to validate',
+    apiKeyMissing: 'Google Maps API key is not configured',
+    notFound: 'The location could not be validated',
+    validated: 'Location validated',
+    validating: 'Validating...',
+    validateButton: 'Validate location on map',
+    modalTitle: 'Search location',
+    close: 'Close',
+    confirm: 'Confirm location',
+    validationRequired: 'You must select a valid location.',
+  },
   myApplicationsPage: {
     badge: 'Applications',
     title: 'My applications',
