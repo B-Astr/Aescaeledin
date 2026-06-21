@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import LocationMapLink from "../components/LocationMapLink";
 import "./CompanyJobsPage.css";
 import { useI18nContext } from "../i18n";
+import { formatPriceAsInteger } from "../lib/formatPrice";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -215,7 +216,11 @@ export default function ProServicesPage() {
                           fallback={LL.proServicesPage.noLocation()}
                           className="location-map-link"
                         />
-                        <span>{service.price || LL.proServicesPage.negotiablePrice()}</span>
+                        <span>
+                          {formatPriceAsInteger(service.price) ||
+                            service.price ||
+                            LL.proServicesPage.negotiablePrice()}
+                        </span>
                         <span>
                           {service.isActive ? LL.proServicesPage.active() : LL.proServicesPage.deactivated()}
                         </span>

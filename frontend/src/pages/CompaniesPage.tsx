@@ -80,7 +80,10 @@ export default function CompaniesPage() {
 
         setUser(meData.user);
 
-        if (meData.user.role !== "PRO") {
+        if (
+          meData.user.role !== "PRO" &&
+          meData.user.role !== "EMPRESA"
+        ) {
           navigate("/");
           return;
         }
@@ -104,6 +107,10 @@ export default function CompaniesPage() {
   }, [navigate]);
 
   async function handleRequest(companyId: number) {
+    if (user?.role !== "PRO") {
+      return;
+    }
+
     const token = sessionStorage.getItem("token");
     if (!token) {
       navigate("/login");
@@ -153,12 +160,18 @@ export default function CompaniesPage() {
         <main className="company-jobs-main">
           <div className="company-jobs-header">
             <div>
-              <span className="company-jobs-badge">{LL.companiesPage.pro()}</span>
+              <span className="company-jobs-badge">
+                {user?.role === "EMPRESA"
+                  ? LL.companiesPage.company()
+                  : LL.companiesPage.pro()}
+              </span>
               <h1>{LL.companiesPage.regCompanies()}</h1>
               <p>
-                {user?.name
-                  ? `${LL.companiesPage.explore()}, ${user.name}.`
-                  : `${LL.companiesPage.explore()}`}
+                {user?.role === "EMPRESA"
+                  ? LL.companiesPage.browse()
+                  : user?.name
+                    ? `${LL.companiesPage.explore()}, ${user.name}.`
+                    : LL.companiesPage.explore()}
               </p>
             </div>
           </div>
@@ -196,17 +209,19 @@ export default function CompaniesPage() {
                       </div>
                     </div>
 
-                    <div className="company-job-actions">
-                      <button
-                        onClick={() => handleRequest(company.id)}
-                        className="nav-primary-button"
-                        disabled={requestingId === company.id}
-                      >
-                        {requestingId === company.id
-                          ? LL.companiesPage.sending()
-                          : LL.companiesPage.requestJob()}
-                      </button>
-                    </div>
+                    {user?.role === "PRO" && (
+                      <div className="company-job-actions">
+                        <button
+                          onClick={() => handleRequest(company.id)}
+                          className="nav-primary-button"
+                          disabled={requestingId === company.id}
+                        >
+                          {requestingId === company.id
+                            ? LL.companiesPage.sending()
+                            : LL.companiesPage.requestJob()}
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {company.headline && <p>{company.headline}</p>}

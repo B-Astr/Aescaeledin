@@ -98,13 +98,27 @@
 }
 
 .location-map-link {
+  border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .location-map-link:hover {
-  border-color: rgba(96, 165, 250, 0.34);
-  color: #bfdbfe;
+  border-color: rgba(96, 165, 250, 0.52);
+  background: rgba(59, 130, 246, 0.14);
+  color: #dbeafe;
+}
+
+.location-map-link:focus-visible {
+  border-color: rgba(147, 197, 253, 0.72);
+  background: rgba(59, 130, 246, 0.16);
+  color: #eff6ff;
+  outline: 2px solid rgba(96, 165, 250, 0.48);
+  outline-offset: 2px;
 }
 
 .job-description {

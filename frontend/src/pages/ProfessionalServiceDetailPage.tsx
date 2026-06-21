@@ -8,6 +8,7 @@ import "./JobDetailPage.css";
 import "./HomePage.css";
 import { useI18nContext } from "../i18n";
 import { usePageMeta } from "../lib/usePageMeta";
+import { formatPriceAsInteger } from "../lib/formatPrice";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -147,7 +148,9 @@ export default function ProfessionalServiceDetailPage() {
                     className="job-tag location-map-link"
                   />
                   <span className="job-tag">
-                    {service.price || LL.serviceDetailPage.negotiablePrice()}
+                    {formatPriceAsInteger(service.price) ||
+                      service.price ||
+                      LL.serviceDetailPage.negotiablePrice()}
                   </span>
                 </div>
 

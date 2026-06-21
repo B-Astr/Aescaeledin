@@ -62,15 +62,17 @@ const es = {
     bigtext1:
       'Hasta el día de hoy un gran problema que tenemos en el mundo es la elevada tasa de desempleos, dejando a muchas personas desesperadas buscando trabajo para poder mantener a sus familias. Además de dejar currículum presencialmente en las empresas, también recurren a plataformas digitales para buscar empleo, pero estas plataformas llegan a ser más una red social que una pura plataforma para buscar empleo.',
     bigtext2:
-      'Por tanto, el enfoque de ASTCALEDIN es poder ofrecer una plataforma con el único fin de búsqueda de empleo, con el objetivo de poder realmente ayudar a todas las personas que están complicados con la búsqueda de empleo.',
+      'Por tanto, el enfoque de ASCALEDIN es poder ofrecer una plataforma con el único fin de búsqueda de empleo, con el objetivo de poder realmente ayudar a todas las personas que están complicados con la búsqueda de empleo.',
   },
   companiesPage: {
     pro: 'Profesional',
+    company: 'Empresa',
     regCompanies: 'Empresas registradas',
     loading: 'Cargando empresas...',
     noCompanies: 'No hay empresas registradas',
     whenExist: 'Cuando existan empresas, aparecerán aquí.',
     explore: 'Explora empresas y solicita empleo',
+    browse: 'Revisa las empresas registradas en la plataforma.',
     noName: 'Empresa sin nombre',
     noLocation: 'Sin ubicación',
     sending: 'Enviando...',
@@ -238,6 +240,11 @@ const es = {
     negotiablePrice: 'Precio a convenir',
     noName: 'Profesional sin nombre',
     viewService: 'Ver servicio',
+    servicePriceLabel: 'Precio del servicio',
+    sortPriceLabel: 'Ordenar por precio',
+    sortNone: 'Sin ordenar',
+    sortPriceAsc: 'Menor a mayor',
+    sortPriceDesc: 'Mayor a menor',
   },
   proServicesPage: {
     badge: 'Panel profesional',

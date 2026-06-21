@@ -274,13 +274,15 @@ export default function Navbar() {
                   {LL.navbar.professionals()}
                 </Link>
 
-                <Link
-                  to="/companies"
-                  className="navbar-menu-item"
-                  onClick={closeMenu}
-                >
-                  {LL.navbar.companies()}
-                </Link>
+                {!isClient && (
+                  <Link
+                    to="/companies"
+                    className="navbar-menu-item"
+                    onClick={closeMenu}
+                  >
+                    {LL.navbar.companies()}
+                  </Link>
+                )}
 
                 {isClient && (
                   <>
@@ -483,13 +485,15 @@ export default function Navbar() {
                 {LL.navbar.professionals()}
               </Link>
 
-              <Link
-                to="/companies"
-                className="nav-secondary-button"
-                onClick={closeMenu}
-              >
-                {LL.navbar.companies()}
-              </Link>
+              {!isClient && (
+                <Link
+                  to="/companies"
+                  className="nav-secondary-button"
+                  onClick={closeMenu}
+                >
+                  {LL.navbar.companies()}
+                </Link>
+              )}
             </>
           )}
 

@@ -7,7 +7,7 @@ const MIN_QUERY_LENGTH = 3;
 const MAX_QUERY_LENGTH = 160;
 const SEARCH_DEBOUNCE_MS = 450;
 const MAX_RESULTS = 5;
-const MIN_RESULT_SCORE = 0.4;
+const MIN_RESULT_SCORE = 0.3;
 
 type SearchResult = {
   id: string;
@@ -187,7 +187,6 @@ export default function NavbarSearch({
                 >
                   <span className="navbar-search-result-topline">
                     <strong>{result.title}</strong>
-                    <span>{Math.round(Math.max(0, Math.min(1, result.score)) * 100)}%</span>
                   </span>
                   <span className="navbar-search-result-type">
                     {result.type === "JOB"

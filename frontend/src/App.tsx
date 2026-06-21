@@ -155,11 +155,11 @@ export default function App() {
           }
         />
 
-        {/* SOLO PROFESIONAL VE EMPRESAS */}
+        {/* PROFESIONAL Y EMPRESA PUEDEN REVISAR EMPRESAS */}
         <Route
           path="/companies"
           element={
-            <ProtectedRoute allowedRoles={["PRO"]}>
+            <ProtectedRoute allowedRoles={["PRO", "EMPRESA"]}>
               <CompaniesPage />
             </ProtectedRoute>
           }

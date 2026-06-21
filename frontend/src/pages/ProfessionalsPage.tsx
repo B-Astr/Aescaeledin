@@ -1,12 +1,14 @@
 // frontend/src/pages/ProfessionalsPage.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import LocationMapLink from "../components/LocationMapLink";
 import "./HomePage.css";
+import "./ProfessionalsPage.css";
 import { useI18nContext } from "../i18n";
 import { usePageMeta } from "../lib/usePageMeta";
+import { formatPriceAsInteger } from "../lib/formatPrice";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -32,6 +34,8 @@ type ProfessionalService = {
   isActive: boolean;
   professional: Professional | null;
 };
+
+type PriceSortOption = "NONE" | "ASC" | "DESC";
 
 const demoServices: ProfessionalService[] = [
   {
@@ -64,6 +68,42 @@ export default function ProfessionalsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [usingDemoData, setUsingDemoData] = useState(false);
+  const [priceSort, setPriceSort] = useState<PriceSortOption>("NONE");
+
+  const displayedServices = useMemo(() => {
+    if (priceSort === "NONE") {
+      return services;
+    }
+
+    return [...services].sort((left, right) => {
+      const leftPrice = Number(left.price);
+      const rightPrice = Number(right.price);
+      const leftIsNumeric =
+        left.price !== null &&
+        left.price.trim() !== "" &&
+        Number.isFinite(leftPrice);
+      const rightIsNumeric =
+        right.price !== null &&
+        right.price.trim() !== "" &&
+        Number.isFinite(rightPrice);
+
+      if (!leftIsNumeric && !rightIsNumeric) {
+        return 0;
+      }
+
+      if (!leftIsNumeric) {
+        return 1;
+      }
+
+      if (!rightIsNumeric) {
+        return -1;
+      }
+
+      return priceSort === "ASC"
+        ? leftPrice - rightPrice
+        : rightPrice - leftPrice;
+    });
+  }, [priceSort, services]);
 
   useEffect(() => {
     async function loadServices() {
@@ -207,20 +247,34 @@ export default function ProfessionalsPage() {
                   </div>
                 )}
 
-                <p
-                  style={{
-                    color: "#bfdbfe",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    margin: "0 0 18px",
-                    textAlign: "left",
-                  }}
-                >
-                  {LL.professionalsPage.resultsCount(services.length)}
-                </p>
+                <div className="professionals-list-toolbar">
+                  <label className="professionals-price-sort">
+                    <span>{LL.professionalsPage.sortPriceLabel()}</span>
+                    <select
+                      value={priceSort}
+                      onChange={(event) =>
+                        setPriceSort(event.target.value as PriceSortOption)
+                      }
+                    >
+                      <option value="NONE">
+                        {LL.professionalsPage.sortNone()}
+                      </option>
+                      <option value="ASC">
+                        {LL.professionalsPage.sortPriceAsc()}
+                      </option>
+                      <option value="DESC">
+                        {LL.professionalsPage.sortPriceDesc()}
+                      </option>
+                    </select>
+                  </label>
+
+                  <p>
+                    {LL.professionalsPage.resultsCount(services.length)}
+                  </p>
+                </div>
 
                 <div style={{ display: "grid", gap: "18px" }}>
-                  {services.map((service) => (
+                  {displayedServices.map((service) => (
                     <article
                       key={service.id}
                       style={{
@@ -277,6 +331,7 @@ export default function ProfessionalsPage() {
                               longitude={service.longitude}
                               placeId={service.placeId}
                               fallback={LL.professionalsPage.noLocation()}
+                              className="professional-location-link"
                               style={{
                                 minHeight: "28px",
                                 padding: "0 10px",
@@ -291,21 +346,6 @@ export default function ProfessionalsPage() {
                               }}
                             />
 
-                            <span
-                              style={{
-                                minHeight: "28px",
-                                padding: "0 10px",
-                                borderRadius: "999px",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                background: "rgba(255,255,255,0.05)",
-                                color: "#cbd5e1",
-                                fontSize: "12px",
-                              }}
-                            >
-                              {service.price || LL.professionalsPage.negotiablePrice()}
-                            </span>
                           </div>
 
                           {service.professional && (
@@ -327,16 +367,29 @@ export default function ProfessionalsPage() {
                           )}
                         </div>
 
-                        <Link
-                          to={
-                            service.id === 999999
-                              ? "/professionals"
-                              : `/professionals/${service.id}`
-                          }
-                          className="primary-home-button"
-                        >
-                          {LL.professionalsPage.viewService()}
-                        </Link>
+                        <div className="professional-service-side">
+                          <Link
+                            to={
+                              service.id === 999999
+                                ? "/professionals"
+                                : `/professionals/${service.id}`
+                            }
+                            className="primary-home-button"
+                          >
+                            {LL.professionalsPage.viewService()}
+                          </Link>
+
+                          <div className="professional-service-price">
+                            <span>
+                              {LL.professionalsPage.servicePriceLabel()}
+                            </span>
+                            <strong>
+                              {formatPriceAsInteger(service.price) ||
+                                service.price ||
+                                LL.professionalsPage.negotiablePrice()}
+                            </strong>
+                          </div>
+                        </div>
                       </div>
 
                       <p

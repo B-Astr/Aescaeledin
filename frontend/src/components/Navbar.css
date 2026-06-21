@@ -233,8 +233,10 @@
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
+  left: 0;
   z-index: 10020;
-  width: min(380px, calc(100vw - 32px));
+  width: 100%;
+  min-width: 0;
   padding: 8px;
   border-radius: 14px;
   background: rgba(10, 19, 35, 0.98);
@@ -307,10 +309,8 @@
 }
 
 .navbar-search-result-topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  display: block;
+  min-width: 0;
   font-size: 14px;
 }
 
@@ -319,13 +319,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.navbar-search-result-topline > span {
-  color: #93c5fd;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
 }
 
 .navbar-search-result-type {
