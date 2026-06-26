@@ -179,21 +179,23 @@ export async function googleLogin(req: Request, res: Response) {
       (await User.findOne({ where: { googleSub } }));
 
     if (selectedIntent === "register") {
-      if (user) {
+      if (user?.otpEnabled && user.otpSecret) {
         return res.status(409).json({
           error: "Ya existe una cuenta registrada con este correo. Inicia sesión en su lugar.",
         });
       }
 
-      user = await User.create({
-        email,
-        googleSub,
-        name,
-        picture,
-        role: selectedRole,
-        otpEnabled: false,
-        otpSecret: null,
-      });
+      if (!user) {
+        user = await User.create({
+          email,
+          googleSub,
+          name,
+          picture,
+          role: selectedRole,
+          otpEnabled: false,
+          otpSecret: null,
+        });
+      }
     }
 
     if (selectedIntent === "login") {
@@ -231,22 +233,30 @@ export async function googleLogin(req: Request, res: Response) {
       });
     }
 
+    if (selectedIntent === "login" && user.otpEnabled && user.otpSecret) {
+      const token = signAccessToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name ?? null,
+        picture: user.picture ?? null,
+      });
+
+      return res.json({
+        step: "AUTHENTICATED",
+        token,
+        user: pickUser(user),
+      });
+    }
+
     const pendingToken = signPendingToken({
       id: user.id,
       email: user.email,
       role: user.role,
     });
 
-    if (!user.otpEnabled || !user.otpSecret) {
-      return res.json({
-        step: "OTP_SETUP_REQUIRED",
-        pendingToken,
-        user: pickUser(user),
-      });
-    }
-
     return res.json({
-      step: "OTP_REQUIRED",
+      step: "OTP_SETUP_REQUIRED",
       pendingToken,
       user: pickUser(user),
     });
@@ -441,6 +451,12 @@ export async function completeLogin(req: Request, res: Response) {
     if (!user) {
       return res.status(404).json({
         error: "Usuario no encontrado",
+      });
+    }
+
+    if (!user.otpEnabled || !user.otpSecret) {
+      return res.status(403).json({
+        error: "Autenticacion incompleta. OTP requerido.",
       });
     }
 
